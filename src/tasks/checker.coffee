@@ -17,7 +17,7 @@ module.exports = (grunt) ->
       ([200].indexOf code) >= 0
 
     isRetryCode : (code)->
-      (["ETIMEOUT",  "ECONNREFUSED", "HPE_INVALID_CONSTANT"].indexOf code) >= 0
+      (["ETIMEOUT", "ECONNREFUSED", "HPE_INVALID_CONSTANT", "ECONNRESET", "ETIMEDOUT", "ESOCKETTIMEDOUT", "EPROTO"].indexOf code) >= 0
 
     checkHTTPLink : (filepath, link, retryCount = 0)->
       requestOption =
@@ -36,8 +36,9 @@ module.exports = (grunt) ->
           if res? and @isAllowedStatusCode res.statusCode
             @logger.ok "ok: #{link} at '#{filepath}'"
             @checkStatus[link] = "ok"
-          else if error? and @isRetryCode error.code and retryCount < @maxAttempts
+          else if error? and @isRetryCode(error.code) and retryCount < @maxAttempts
             @logger.error "retry: #{link} (#{retryCount}) at '#{filepath}'"
+            retryCount = retryCount + 1
             @checkHTTPLink filepath, link, retryCount
           else
             msg = if error then JSON.stringify error else res.statusCode
