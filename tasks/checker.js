@@ -44,7 +44,7 @@
           pool: {
             maxSockets: 10
           },
-          timeout: 60000
+          timeout: 5000
         };
         retryDelay = retryCount != null ? 0 : this.retryDelay;
         return setTimeout(function() {

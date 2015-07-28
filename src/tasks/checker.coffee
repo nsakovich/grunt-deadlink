@@ -29,7 +29,7 @@ module.exports = (grunt) ->
         followRedirect : true
         pool :
           maxSockets : 10
-        timeout: 60000
+        timeout: 5000
 
       retryDelay = if retryCount? then 0 else @retryDelay
 
