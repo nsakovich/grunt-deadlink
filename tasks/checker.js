@@ -47,23 +47,21 @@
           timeout: 60000
         };
         retryDelay = retryCount != null ? 0 : this.retryDelay;
-        return setTimeout(function() {
-          return request(requestOption, function(error, res, body) {
-            var msg;
-            if ((res != null) && _this.isAllowedStatusCode(res.statusCode)) {
-              _this.logger.ok("ok: " + link + " at '" + filepath + "'");
-              return _this.checkStatus[link] = "ok";
-            } else if ((error != null) && _this.isRetryCode(error.code) && retryCount < _this.maxAttempts) {
-              _this.logger.error("retry: " + link + " (" + retryCount + ") at '" + filepath + "'");
-              retryCount = retryCount + 1;
-              return _this.checkHTTPLink(filepath, link, retryCount);
-            } else {
-              msg = error ? JSON.stringify(error) : res.statusCode;
-              _this.logger.error("broken: " + link + " (" + msg + ") at '" + filepath + "'");
-              return _this.checkStatus[link] = "fail";
-            }
-          }).setMaxListeners(25);
-        }, retryDelay);
+        return request(requestOption, function(error, res, body) {
+          var msg;
+          if ((res != null) && _this.isAllowedStatusCode(res.statusCode)) {
+            _this.logger.ok("ok: " + link + " at '" + filepath + "'");
+            return _this.checkStatus[link] = "ok";
+          } else if ((error != null) && _this.isRetryCode(error.code) && retryCount < _this.maxAttempts) {
+            _this.logger.error("retry: " + link + " (" + retryCount + ") at '" + filepath + "'");
+            retryCount = retryCount + 1;
+            return _this.checkHTTPLink(filepath, link, retryCount);
+          } else {
+            msg = error ? JSON.stringify(error) : res.statusCode;
+            _this.logger.error("broken: " + link + " (" + msg + ") at '" + filepath + "'");
+            return _this.checkStatus[link] = "fail";
+          }
+        }).setMaxListeners(25);
       };
 
       Checker.prototype.checkLocalLink = function(filepath, link) {

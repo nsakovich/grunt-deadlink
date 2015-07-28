@@ -33,21 +33,20 @@ module.exports = (grunt) ->
 
       retryDelay = if retryCount? then 0 else @retryDelay
 
-      setTimeout =>
-        request requestOption, (error, res, body) =>
-          if res? and @isAllowedStatusCode res.statusCode
-            @logger.ok "ok: #{link} at '#{filepath}'"
-            @checkStatus[link] = "ok"
-          else if error? and @isRetryCode(error.code) and retryCount < @maxAttempts
-            @logger.error "retry: #{link} (#{retryCount}) at '#{filepath}'"
-            retryCount = retryCount + 1
-            @checkHTTPLink filepath, link, retryCount
-          else
-            msg = if error then JSON.stringify error else res.statusCode
-            @logger.error "broken: #{link} (#{msg}) at '#{filepath}'"
-            @checkStatus[link] = "fail"
-        .setMaxListeners 25
-      , retryDelay
+      request requestOption, (error, res, body) =>
+        if res? and @isAllowedStatusCode res.statusCode
+          @logger.ok "ok: #{link} at '#{filepath}'"
+          @checkStatus[link] = "ok"
+        else if error? and @isRetryCode(error.code) and retryCount < @maxAttempts
+          @logger.error "retry: #{link} (#{retryCount}) at '#{filepath}'"
+          retryCount = retryCount + 1
+          @checkHTTPLink filepath, link, retryCount
+        else
+          msg = if error then JSON.stringify error else res.statusCode
+          @logger.error "broken: #{link} (#{msg}) at '#{filepath}'"
+          @checkStatus[link] = "fail"
+      .setMaxListeners 25
+
 
     checkLocalLink : (filepath, link)->
       fs.exists link, (exist)=>
